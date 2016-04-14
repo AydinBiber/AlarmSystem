@@ -5,12 +5,31 @@ int sensorValue = 0;  // variable to store the value coming from the sensor
 void setup() {
   // declare the ledPin as an OUTPUT:
   pinMode(setAlarm, OUTPUT);
+  Serial.begin(9600);
 }
 
 void loop() {
-  //sensorValue = analogRead(sensorPin);
-  digitalWrite(setAlarm, HIGH);
-  delay(2000);
-  digitalWrite(setAlarm, LOW);
-  delay(500);
+  int x = 1;
+  int numberOfDetections = 0;
+  while(true){
+    sensorValue = analogRead(sensorPin);
+    Serial.print(sensorValue);
+    Serial.print("\n");
+    if (x != 1){
+      digitalWrite(setAlarm, LOW);
+      delay(500);
+      digitalWrite(setAlarm, HIGH);
+      x = 1;
+    }
+    if (sensorValue >= 500){
+      numberOfDetections++;
+    }
+    if(numberOfDetections >= 10){
+       Serial.print("Het nummer van bewegingen is: ");
+       Serial.print(numberOfDetections);
+       Serial.print("\n");
+       numberOfDetections = 0;
+    }
+    delay(2000);
+  }
 }
