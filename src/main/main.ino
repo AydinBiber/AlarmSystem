@@ -1,6 +1,7 @@
 int sensorPin = A0;    // select the input pin for the potentiometer
 int setAlarm = 8;      // select the pin for the LED
 int sensorValue = 0;  // variable to store the value coming from the sensor
+int numberOfDetections = 0;
 bool activateAlarm = true;
 
 unsigned int minute = 60 * 1000; // 60 * (1000 milliseconds)
@@ -14,9 +15,7 @@ void setup() {
 }
 
 void loop() {
-  int numberOfDetections = 0;
-
-
+  
   currentMillis = millis();
   sensorValue = analogRead(sensorPin);
   
