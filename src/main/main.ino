@@ -23,13 +23,25 @@ void loop() {
     }
     if (sensorValue >= 500){
       numberOfDetections++;
+      if(numberOfDetections == 1) {
+        // Start timer
+      }
     }
     if(numberOfDetections >= 10){
        Serial.print("Het nummer van bewegingen is: ");
        Serial.print(numberOfDetections);
        Serial.print("\n");
        numberOfDetections = 0;
+       // Reset timer
+    }
+    if(timer.time == 1 minute) {
+      // Reset timer
     }
     delay(2000);
   }
 }
+
+void send_warning() {
+  
+}
+
