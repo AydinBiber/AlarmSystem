@@ -18,11 +18,12 @@ volatile int half_revolutions = 0;// count the half revolutions of the fan with 
 int HeightSensor = A0;
 int MotoroutPin = 3; // PWM output
 int Tacho = 2;
+int Output = 0;
 
 // Define the control input,output and setpoint global, so the PID controller can use them
 double ActualHeightSensor;
 double ActualHeightFan;
-double DesiredHeightFan = 0; // measure the height which you think the fan should be to balance [cm]
+double DesiredHeightFan = 10; // measure the height which you think the fan should be to balance [cm]
 double Motorout; // PID output
 
 /*Specify the PID input, setpoint and output
@@ -118,8 +119,13 @@ void loop() // loop forever
       PID_controller.Compute();
       
 
-      //write PWM to MotoroutPin to set the fan speed.  
-      analogWrite(MotoroutPin,180);
+      //write PWM to MotoroutPin to set the fan speed.
+      if(ActualHeightSensor > DesiredHeightFan) {
+        Output -= 1;
+      } else if(ActualHeightSensor < DesiredHeightFan){
+        Output += 1;
+      }
+      analogWrite(MotoroutPin,Output);
 //      analogWrite(MotoroutPin,Motorout);
 
 //    sendPlotData("rpm",rpm);
