@@ -2,9 +2,9 @@ int sensorPin = A0;    // select the input pin for the potentiometer
 int setAlarm = 8;      // select the pin for the LED
 int sensorValue = 0;  // variable to store the value coming from the sensor
 
-unsigned long int minute (60 * 1000); // 60 * (1000 milliseconds)
-unsigned long int previousMillis = 0;
-unsigned long int currentMillis = 0;
+unsigned int minute = 60 * 1000; // 60 * (1000 milliseconds)
+unsigned int previousMillis = 0;
+unsigned int currentMillis = 0;
 
 void setup() {
   // declare the ledPin as an OUTPUT:
@@ -41,9 +41,9 @@ void loop() {
      * Check if there have been 10 or more detections
      */
     if(numberOfDetections >= 10){
-       //Serial.print("Het nummer van bewegingen is: ");
-       //Serial.print(numberOfDetections);
-       //Serial.print("\n");
+       Serial.print("Het nummer van bewegingen is: ");
+       Serial.print(numberOfDetections);
+       Serial.print("\n");
        numberOfDetections = 0;
        previousMillis = currentMillis; // Reset timer
     }
@@ -56,17 +56,6 @@ void loop() {
       previousMillis = currentMillis; // Reset timer
       numberOfDetections = 0;
     }
-
-    Serial.print("\nCurrent: ");
-    Serial.print(currentMillis);
-    Serial.print("\nPrevious: ");
-    Serial.print(previousMillis);
-    Serial.print("\n");
     delay(2000);
   }
 }
-
-void send_warning() {
-  
-}
-
