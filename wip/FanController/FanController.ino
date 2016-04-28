@@ -120,11 +120,16 @@ void loop() // loop forever
       
 
       //write PWM to MotoroutPin to set the fan speed.
-      if(ActualHeightSensor > DesiredHeightFan) {
+      int inc = 0; 
+      Serial.println("height: " + String(ActualHeightSensor));
+      if(ActualHeightFan > DesiredHeightFan) {
         Output -= 1;
-      } else if(ActualHeightSensor < DesiredHeightFan){
+        if(Output > 255){ Output = 255; }
+      } else if(ActualHeightFan < DesiredHeightFan) {
         Output += 1;
+        if(Output < 0 ){ Output = 0; }
       }
+      
       analogWrite(MotoroutPin,Output);
 //      analogWrite(MotoroutPin,Motorout);
 
