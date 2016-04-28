@@ -23,7 +23,7 @@ int Output = 0;
 // Define the control input,output and setpoint global, so the PID controller can use them
 double ActualHeightSensor;
 double ActualHeightFan;
-double DesiredHeightFan = 10; // measure the height which you think the fan should be to balance [cm]
+double DesiredHeightFan = 10.6; // measure the height which you think the fan should be to balance [cm]
 double Motorout; // PID output
 
 /*Specify the PID input, setpoint and output
@@ -122,16 +122,21 @@ void loop() // loop forever
       //write PWM to MotoroutPin to set the fan speed.
       int inc = 0; 
       Serial.println("height: " + String(ActualHeightSensor));
-      if(ActualHeightFan > DesiredHeightFan) {
-        Output -= 1;
-        if(Output > 255){ Output = 255; }
-      } else if(ActualHeightFan < DesiredHeightFan) {
-        Output += 1;
-        if(Output < 0 ){ Output = 0; }
-      }
       
+      
+//      if(ActualHeightFan > DesiredHeightFan) {
+//        Output -= 5;
+//        if(Output > 255){ Output = 255; }
+//      } else if(ActualHeightFan < DesiredHeightFan) {
+//        Output += 5;
+//        if(Output < 0 ){ Output = 0; }
+//      }
+      double gekkeFormule = ActualHeightFan/DesiredHeightFan;
+      if (gekkeFormule < 0.1){ gekkeFormule = 0.1;}
+      Output = 255 / (gekkeFormule) ;
+      if(Output > 255){ Output = 255; }
       analogWrite(MotoroutPin,Output);
-//      analogWrite(MotoroutPin,Motorout);
+
 
 //    sendPlotData("rpm",rpm);
       sendPlotData("ActualHeightFan",ActualHeightFan);
