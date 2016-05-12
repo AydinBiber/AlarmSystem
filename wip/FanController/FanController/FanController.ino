@@ -76,6 +76,7 @@ void loop() // loop forever
 {
   if ((millis() - LastSample) > SampleTime)
   {
+    int fanSpeed = 0;
     LastSample = millis(); //current time
 
      int val =  analogRead(HeightSensor);
@@ -128,37 +129,61 @@ void loop() // loop forever
       int inc = 0; 
       Serial.println("height: " + String(ActualHeightSensor));
       
-      
-//      if(ActualHeightFan > DesiredHeightFan) {
-//        Output -= 5;
-//        if(Output > 255){ Output = 255; }
-//      } else if(ActualHeightFan < DesiredHeightFan) {
-//        Output += 5;
-//        if(Output < 0 ){ Output = 0; }
-//      }
 
-      int NegHigh = 120;
-      int NegLow = 160;
-      int zero = 190;
-      int PosLow = 235;
-      int PosHigh = 255;
-      double HeightChange = ActualHeightFan - PerviousHeightFan;
-      //double gekkeFormule = ActualHeightFan/DesiredHeightFan;
-      //if (gekkeFormule < 0.1){ gekkeFormule = 0.1;}
-      //Output = 255 / (gekkeFormule) ;
-      //if(Output > 255){ Output = 255; }
       
-      if(Error >= 0.5|| HeightChange < -0.1){ Output = PosLow;}
-      if(Error >= 2 || HeightChange < -0.3){Output = PosHigh;}
-      if(Error <0.3 && Error> -0.3){Output = zero;}
-      if(Error <= -0.5 || HeightChange > 0.1){Output = NegLow;}
-      if(Error <= -2 || HeightChange > 0.3){Output = NegHigh;}
-      analogWrite(MotoroutPin,Output);
+      // Value read from the sensor
+   double triangles[][3] = 
+    { 
+    {4.0, 4.0, 8},   //Low
+    {8.0, DesiredHeightFan-1, DesiredHeightFan },
+    {DesiredHeightFan-1, DesiredHeightFan, 11.0}, // Good
+    {DesiredHeightFan, 12.0, 13.0},
+    {12.0, 13.0, 13.0}             // High
+    };
+    
+  double value = ActualHeightFan;
+  int heightGradation = 0;
+  for (heightGradation=0; heightGradation< sizeof(triangles); heightGradation++)
+  {
+    if (triangles[heightGradation][0] < value && value < triangles[heightGradation][2])
+    {
       
+      break;
+    }
+  }
+  
+  //... Some other traits
+  
+  double behaviour[]=
+  {
+    230, //
+    200,
+    185, //
+    170, 
+    40    //
+  };
+  if (heightGradation < sizeof(triangles)/sizeof(triangles[0]))
+  {
+    double factpor1 = (value > triangles[heightGradation][1])
+      ? (value - triangles[heightGradation][1]) /( triangles[heightGradation][2] - triangles[heightGradation][1])
+      : (value - triangles[heightGradation][0]) /( triangles[heightGradation][1] - triangles[heightGradation][0]);
+    
+    heightGradation++;
+    double factpor2 = (value - triangles[heightGradation][0]) /( triangles[heightGradation][1] - triangles[heightGradation][0]);
+      
+    fanSpeed = (behaviour[heightGradation-1] * factpor1 + behaviour[heightGradation] * factpor2) / (factpor1 + factpor2);
+  
+  }
+  else
+  {
+    fanSpeed = behaviour[heightGradation];
+    
+   
+  }
+  analogWrite(MotoroutPin,fanSpeed);    
 
-//    sendPlotData("rpm",rpm);
       sendPlotData("ActualHeightFan",ActualHeightFan);
-      sendPlotData("HeightChange",HeightChange);
+      sendPlotData("fanSpeed",fanSpeed);
       sendPlotData("Error",Error);
   }
    
